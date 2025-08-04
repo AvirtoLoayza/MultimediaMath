@@ -451,19 +451,19 @@ body::before {
 }
 
 .wizard-character.animated {
-  width: 120px;
-  height: 160px;
-  background: url('images/actor1.gif') center/contain no-repeat;
+  width: 100px;
+  height: 120px;
+  background-color: rgba(0, 255, 0, 0.3); /* Fallback verde si no carga la imagen */
   transition: all 0.3s ease;
   position: absolute;
-  right: 100px;
-  bottom: 20px;
+  left: 80px;
+  bottom: 60px;
   z-index: 10;
 }
 
 .wizard-character.attack {
   background-image: url('images/actor1.gif');
-  animation: attack 0.5s ease;
+  animation: attack 0.8s ease;
 }
 
 .wizard-character.damage {
@@ -472,34 +472,30 @@ body::before {
 }
 
 .enemy-character.animated {
-  width: 120px;
-  height: 160px;
-  background: url('images/malo.gif') center/contain no-repeat;
+  width: 100px;
+  height: 120px;
+  background-color: rgba(255, 0, 0, 0.3); /* Fallback rojo si no carga la imagen */
   position: absolute;
-  left: 100px;
-  bottom: 20px;
+  right: 80px;
+  bottom: 60px;
   z-index: 10;
   transition: left 0.1s linear;
 }
 
-.enemy-character.boss {
-  background-image: url('images/malo3.gif');
-}
-
 .enemy-character.attack {
-  background-image: url('images/malo2.gif');
   animation: enemyAttack 0.5s ease;
 }
 
 .enemy-character.death {
-  background-image: url('images/malo.gif');
   animation: enemyDeath 0.5s ease;
 }
 
 @keyframes attack {
-  0% { transform: translateX(0); }
-  50% { transform: translateX(-30px); }
-  100% { transform: translateX(0); }
+  0% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(20px) rotate(-15deg); }
+  50% { transform: translateX(40px) rotate(-30deg); }
+  75% { transform: translateX(20px) rotate(-15deg); }
+  100% { transform: translateX(0) rotate(0deg); }
 }
 
 @keyframes shake {
@@ -510,7 +506,7 @@ body::before {
 
 @keyframes enemyAttack {
   0% { transform: translateX(0); }
-  50% { transform: translateX(30px); }
+  50% { transform: translateX(-30px); }
   100% { transform: translateX(0); }
 }
 
@@ -518,6 +514,24 @@ body::before {
   0% { transform: scale(1) rotate(0deg); opacity: 1; }
   50% { transform: scale(1.2) rotate(180deg); opacity: 0.5; }
   100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+@keyframes knifeThrow {
+  0% {
+    left: 180px;
+    bottom: 120px;
+    transform: rotate(0deg);
+  }
+  50% {
+    left: 50%;
+    bottom: 120px;
+    transform: rotate(180deg);
+  }
+  100% {
+    left: calc(100% - 180px);
+    bottom: 120px;
+    transform: rotate(360deg);
+  }
 }
 
 .question-display {
@@ -883,16 +897,18 @@ body::before {
   
   .wizard-character.animated,
   .enemy-character.animated {
-    width: 80px;
-    height: 100px;
+    width: 60px;
+    height: 80px;
   }
   
   .wizard-character.animated {
-    right: 20px;
+    left: 40px;
+    bottom: 40px;
   }
   
   .enemy-character.animated {
-    left: 20px;
+    right: 40px;
+    bottom: 40px;
   }
   
   .question-display {
