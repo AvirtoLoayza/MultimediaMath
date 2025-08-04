@@ -9,8 +9,8 @@ let correctAnswers = 0;
 let totalQuestions = 0;
 let currentAnswer = 0;
 let gameWon = false;
-let enemyPosition = 0; // Posición del enemigo (0-100)
-let playerPosition = 50; // Posición del jugador (centro)
+let enemyPosition = 100; // Posición del enemigo (100 = derecha, 0 = izquierda)
+let playerPosition = 0; // Posición del jugador (izquierda fija)
 let enemySpeed = 0.5; // Velocidad de movimiento del enemigo (más lento)
 let enemyMoveInterval;
 let questionsAnswered = 0;
@@ -40,6 +40,27 @@ const playerCharacter = document.getElementById('player-character');
 const enemyCharacter = document.getElementById('enemy-character');
 const enemyProgressBar = document.getElementById('enemy-progress-bar');
 
+// Verificar que las imágenes se cargan correctamente
+function checkImageLoad() {
+  const actor1Img = new Image();
+  actor1Img.onload = function() {
+    console.log('✅ actor1.gif cargado correctamente');
+  };
+  actor1Img.onerror = function() {
+    console.log('❌ Error cargando actor1.gif');
+  };
+  actor1Img.src = 'images/actor1.gif';
+  
+  const maloImg = new Image();
+  maloImg.onload = function() {
+    console.log('✅ malo.gif cargado correctamente');
+  };
+  maloImg.onerror = function() {
+    console.log('❌ Error cargando malo.gif');
+  };
+  maloImg.src = 'images/malo.gif';
+}
+
 // Inicializar el juego
 function initGame() {
   highscoreDisplay.textContent = highscore;
@@ -48,6 +69,9 @@ function initGame() {
   // Inicializar audio
   gameAudio = new Audio('assets/sounds/je.mp3');
   gameAudio.volume = 0.3;
+  
+  // Verificar carga de imágenes
+  checkImageLoad();
 }
 
 // Configurar event listeners
@@ -143,8 +167,8 @@ function startBattle() {
   totalQuestions = 0;
   questionsAnswered = 0;
   gameWon = false;
-  enemyPosition = 0;
-  playerPosition = 50;
+  enemyPosition = 100; // Enemigo empieza desde la derecha
+  playerPosition = 0; // Jugador fijo en la izquierda
   
   // Ajustar velocidad del enemigo según nivel (más lento)
   enemySpeed = selectedLevel * 0.3;
@@ -166,19 +190,60 @@ function startBattle() {
 
 // Mostrar instrucciones del juego
 function showInstructions() {
-  const instructions = `
-    <div style="text-align: center; padding: 20px;">
-      <h3 style="color: #ffcc00; margin-bottom: 15px;">INSTRUCCIONES</h3>
-      <p style="margin-bottom: 10px;">• Responde correctamente para eliminar al enemigo</p>
-      <p style="margin-bottom: 10px;">• Si el enemigo te alcanza, perderás una vida</p>
-      <p style="margin-bottom: 10px;">• Responde 10 preguntas correctamente para ganar</p>
-      <p style="margin-bottom: 10px;">• ¡El enemigo se acerca más rápido con cada error!</p>
-      <p style="color: #00ffff;">¡PREPÁRATE PARA LA BATALLA!</p>
-    </div>
+  const overlay = document.createElement('div');
+  overlay.id = 'instrucciones-overlay';
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100%';
+  overlay.style.height = '100%';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.zIndex = '1000';
+
+  const content = document.createElement('div');
+  content.style.maxWidth = '600px';
+  content.style.padding = '30px';
+  content.style.backgroundColor = '#222';
+  content.style.border = '4px solid #ffcc00';
+  content.style.borderRadius = '20px';
+  content.style.textAlign = 'center';
+  content.style.fontFamily = "'Segoe UI', sans-serif";
+  content.style.color = 'white';
+  content.style.cursor = 'pointer'; // para que el usuario sepa que se puede hacer clic
+
+  content.innerHTML = `
+    <h2 style="color: #ffcc00;">🏰 ¡BIENVENIDO A LA BATALLA DE MATEMÁTICAS! 🏰</h2>
+    <p style="margin-bottom: 12px;">🗡️ <strong>INSTRUCCIONES DE COMBATE</strong> 🛡️</p>
+    <p style="margin-bottom: 12px;">✅ Responde correctamente para lanzar un cuchillo y derrotar al enemigo.</p>
+    <p style="margin-bottom: 12px;">❌ Si el enemigo te alcanza, perderás una vida.</p>
+    <p style="margin-bottom: 12px;">🎯 Acumula <strong>10 respuestas correctas</strong> para ganar la batalla.</p>
+    <p style="margin-bottom: 12px;">⚠️ Cada error acelera el avance del enemigo, ¡sé preciso!</p>
+    <p style="margin-top: 20px; color: #eb4318ff; font-weight: bold;">🔥 ¡TOCA ESTE MARCO PARA COMENZAR! 🔥</p>
   `;
-  
-  showFeedback('¡BATALLA INICIADA!', instructions);
+
+  // Añadir el marco al overlay
+  overlay.appendChild(content);
+  document.body.appendChild(overlay);
+
+  // Solo cerrar si se hace clic en el marco (no fuera)
+  content.addEventListener('click', () => {
+    document.body.removeChild(overlay);
+    iniciarJuego(); // Aquí empieza el juego
+  });
+
+  // Evitar que el clic fuera del marco cierre el juego
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      // Ignora clics fuera del marco
+    }
+  });
 }
+
+
+
 
 // Configurar escena del juego
 function setupScene() {
@@ -201,10 +266,49 @@ function setupScene() {
     gameScene.style.backgroundImage = `url('${backgrounds[selectedLevel]}')`;
   }
   
+  // Configurar actor1 explícitamente
+  setupPlayerCharacter();
+  
+  // Configurar enemigo según nivel
+  setupEnemyByLevel();
+  
   // Animaciones diferentes según nivel
   if (selectedLevel === 3) {
     playerCharacter.classList.add('power-up');
-    enemyCharacter.classList.add('boss');
+  }
+}
+
+// Configurar el personaje del jugador (actor1)
+function setupPlayerCharacter() {
+  playerCharacter.style.backgroundImage = "url('images/actor1.gif')";
+  playerCharacter.style.backgroundSize = 'contain';
+  playerCharacter.style.backgroundRepeat = 'no-repeat';
+  playerCharacter.style.backgroundPosition = 'center';
+  
+  // Agregar texto de fallback
+  playerCharacter.innerHTML = '<div style="color: white; text-align: center; padding-top: 50px; font-size: 12px;">ACTOR1</div>';
+  
+  console.log('Actor1 configurado explícitamente');
+}
+
+// Configurar enemigo según el nivel
+function setupEnemyByLevel() {
+  const enemies = {
+    1: 'images/malo.gif',    // Enemigo básico
+    2: 'images/malo2.gif',   // Enemigo intermedio
+    3: 'images/malo3.gif'    // Enemigo avanzado
+  };
+  
+  if (enemies[selectedLevel]) {
+    enemyCharacter.style.backgroundImage = `url('${enemies[selectedLevel]}')`;
+    enemyCharacter.style.backgroundSize = 'contain';
+    enemyCharacter.style.backgroundRepeat = 'no-repeat';
+    enemyCharacter.style.backgroundPosition = 'center';
+    
+    // Agregar texto de fallback
+    enemyCharacter.innerHTML = '<div style="color: white; text-align: center; padding-top: 50px; font-size: 12px;">ENEMIGO</div>';
+    
+    console.log('Enemigo configurado:', enemies[selectedLevel]); // Debug
   }
 }
 
@@ -217,14 +321,14 @@ function startEnemyMovement() {
       return;
     }
     
-    // Mover enemigo hacia el jugador
-    enemyPosition += enemySpeed;
+    // Mover enemigo hacia la izquierda (hacia el jugador)
+    enemyPosition -= enemySpeed;
     
     // Actualizar posición visual del enemigo
     updateEnemyPosition();
     
     // Verificar si el enemigo llegó al jugador
-    if (enemyPosition >= playerPosition) {
+    if (enemyPosition <= playerPosition) {
       enemyReachedPlayer();
     }
   }, 50); // Actualizar más frecuentemente para movimiento más suave
@@ -235,14 +339,15 @@ function updateEnemyPosition() {
   // Calcular posición basada en el contenedor de pregunta
   const questionContainer = document.querySelector('.question-container');
   const containerRect = questionContainer.getBoundingClientRect();
-  const maxDistance = containerRect.width - 400; // Espacio para personajes
+  const maxDistance = containerRect.width - 200; // Más espacio para movimiento
   
-  // Mapear la posición del enemigo (0-100) a la distancia real
-  const position = (enemyPosition / 100) * maxDistance;
-  enemyCharacter.style.left = `${100 + position}px`; // 100px es la posición inicial
+  // Mapear la posición del enemigo (100-0) a la distancia real
+  // 100 = derecha (más lejano), 0 = izquierda (cerca del jugador)
+  const position = ((100 - enemyPosition) / 100) * maxDistance;
+  enemyCharacter.style.left = `${80 + position}px`; // 80px es la posición inicial (más a la derecha)
   
-  // Actualizar barra de progreso
-  const progressPercent = (enemyPosition / playerPosition) * 100;
+  // Actualizar barra de progreso (invertida)
+  const progressPercent = ((100 - enemyPosition) / 100) * 100;
   enemyProgressBar.style.width = `${Math.min(progressPercent, 100)}%`;
 }
 
@@ -272,7 +377,7 @@ function enemyReachedPlayer() {
       endGame(false);
     } else {
       // Resetear posición del enemigo
-      enemyPosition = 0;
+      enemyPosition = 100;
       updateEnemyPosition();
       startEnemyMovement();
       generateQuestion();
@@ -411,20 +516,47 @@ function checkAnswer(selectedAnswer) {
 
 // Matar al enemigo
 function killEnemy() {
-  // Animación de ataque del jugador
+  // Animación de ataque del jugador (lanzar cuchillo)
   playerCharacter.classList.add('attack');
-  enemyCharacter.classList.add('death');
   
-  // Crear efectos de partículas
-  createParticles(enemyCharacter);
+  // Crear efecto de cuchillo volador
+  createKnifeProjectile();
+  
+  // Después de un breve retraso, el enemigo muere
+  setTimeout(() => {
+    enemyCharacter.classList.add('death');
+    createParticles(enemyCharacter);
+  }, 300);
   
   // Resetear posición del enemigo
   setTimeout(() => {
-    enemyPosition = 0;
+    enemyPosition = 100;
     updateEnemyPosition();
     enemyCharacter.classList.remove('death');
     playerCharacter.classList.remove('attack');
-  }, 500);
+  }, 800);
+}
+
+// Crear efecto de cuchillo volador
+function createKnifeProjectile() {
+  const knife = document.createElement('div');
+  knife.className = 'knife-projectile';
+  knife.innerHTML = '🗡️';
+  knife.style.cssText = `
+    position: absolute;
+    font-size: 2rem;
+    z-index: 15;
+    left: 180px;
+    bottom: 120px;
+    animation: knifeThrow 0.8s ease-out forwards;
+  `;
+  
+  document.querySelector('.question-container').appendChild(knife);
+  
+  // Remover cuchillo después de la animación
+  setTimeout(() => {
+    knife.remove();
+  }, 800);
 }
 
 // Crear efectos de partículas
@@ -515,9 +647,9 @@ function resetGame() {
   totalQuestions = 0;
   questionsAnswered = 0;
   gameWon = false;
-  enemyPosition = 0;
-  playerPosition = 50;
-  enemySpeed = 2;
+  enemyPosition = 100;
+  playerPosition = 0;
+  enemySpeed = 0.5;
 }
 
 // Mezclar array

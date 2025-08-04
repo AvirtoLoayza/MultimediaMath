@@ -27,7 +27,7 @@
       <div class="menu-background"></div>
       <div class="menu-content">
         <h2>ELIGE TU BATALLA</h2>
-        
+         <!-- Sección de selección de operación -->
         <div class="selection-section">
           <h3>OPERACIÓN MATEMÁTICA</h3>
           <div class="operation-selector">
@@ -53,7 +53,7 @@
             </button>
           </div>
         </div>
-
+ <!-- Sección de selección de nivel -->
         <div class="selection-section">
           <h3>NIVEL DE DIFICULTAD</h3>
           <div class="level-selector">
@@ -80,7 +80,7 @@
             </div>
           </div>
         </div>
-
+ <!-- Botones del menú -->
         <div class="menu-buttons">
           <button class="home-button" onclick="goHome()">
             <img src="images/hogar.png" alt="Inicio">
@@ -114,9 +114,12 @@
               <span>PREGUNTAS</span>
               <span id="questions-progress">0/10</span>
             </div>
+            <button class="home-button" onclick="goHome()">
+            <img src="images/hogar.png" alt="Inicio">
+          </button>
           </div>
         </div>
-
+ <!-- Contenedor de preguntas y respuestas -->
         <div class="question-container">
           <div class="wizard-character animated" id="player-character"></div>
           <div class="question-display" id="question-display"></div>
@@ -126,18 +129,18 @@
         <div class="answer-options" id="answer-options">
           <!-- Las opciones se generarán dinámicamente -->
         </div>
-
-        <div class="game-buttons">
-          <button class="home-button" onclick="goHome()">
-            <img src="images/home-icon.png" alt="Inicio">
-          </button>
+ <!-- Botones del juego pista -->
+        <div class="pista-buttons">
           <button class="hint-button" onclick="showHint()">
-            <img src="images/hint-icon.png" alt="Pista">
+            <img src="images/ojo.png" alt="Pista" class="hint-icon">
           </button>
-          <div class="lives-display">
-            <img src="images/heart-icon.png" alt="Vidas" class="life-icon">
-            <span id="lives">3</span>
-          </div>
+        </div>
+      </div>
+      <!-- Botones del juego vida -->
+      <div class="vida-buttons">
+        <div class="lives-display">
+          <img src="images/corazon.png" alt="Vidas" class="life-icon">
+          <span id="lives">3</span>
         </div>
       </div>
 
@@ -172,11 +175,11 @@
         </div>
         <div class="result-buttons">
           <button class="retry-button" onclick="retryGame()">
-            <img src="images/retry-icon.png" alt="Reintentar">
+            <img src="images/actualizar.png" alt="Reintentar">
             <span>REINTENTAR</span>
           </button>
           <button class="menu-button" onclick="goToMenu()">
-            <img src="images/menu-icon.png" alt="Menú">
+            <img src="images/menu.png" alt="Menú">
             <span>MENÚ PRINCIPAL</span>
           </button>
         </div>
