@@ -619,12 +619,24 @@ body::before {
   transform: translateX(100%);
 }
 
-/* Botones del juego */
-.game-buttons {
+/* Botones del juego vida en el lado derecha en la parte arriba */
+.vida-buttons {
+  position: absolute;
+  top: 20px;
+  right: 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  gap: 15px;
+}
+/* Botones del juego pista en el centro y en el medio   */
+.pista-buttons {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .lives-display {

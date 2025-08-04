@@ -190,19 +190,60 @@ function startBattle() {
 
 // Mostrar instrucciones del juego
 function showInstructions() {
-  const instructions = `
-    <div style="text-align: center; padding: 20px;">
-      <h3 style="color: #ffcc00; margin-bottom: 15px;">INSTRUCCIONES</h3>
-      <p style="margin-bottom: 10px;">• Responde correctamente para lanzar un cuchillo y eliminar al enemigo</p>
-      <p style="margin-bottom: 10px;">• Si el enemigo llega hasta ti, perderás una vida</p>
-      <p style="margin-bottom: 10px;">• Responde 10 preguntas correctamente para ganar</p>
-      <p style="margin-bottom: 10px;">• ¡El enemigo se acerca más rápido con cada error!</p>
-      <p style="color: #00ffff;">¡DEFIENDE TU POSICIÓN!</p>
-    </div>
+  const overlay = document.createElement('div');
+  overlay.id = 'instrucciones-overlay';
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100%';
+  overlay.style.height = '100%';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.zIndex = '1000';
+
+  const content = document.createElement('div');
+  content.style.maxWidth = '600px';
+  content.style.padding = '30px';
+  content.style.backgroundColor = '#222';
+  content.style.border = '4px solid #ffcc00';
+  content.style.borderRadius = '20px';
+  content.style.textAlign = 'center';
+  content.style.fontFamily = "'Segoe UI', sans-serif";
+  content.style.color = 'white';
+  content.style.cursor = 'pointer'; // para que el usuario sepa que se puede hacer clic
+
+  content.innerHTML = `
+    <h2 style="color: #ffcc00;">🏰 ¡BIENVENIDO A LA BATALLA DE MATEMÁTICAS! 🏰</h2>
+    <p style="margin-bottom: 12px;">🗡️ <strong>INSTRUCCIONES DE COMBATE</strong> 🛡️</p>
+    <p style="margin-bottom: 12px;">✅ Responde correctamente para lanzar un cuchillo y derrotar al enemigo.</p>
+    <p style="margin-bottom: 12px;">❌ Si el enemigo te alcanza, perderás una vida.</p>
+    <p style="margin-bottom: 12px;">🎯 Acumula <strong>10 respuestas correctas</strong> para ganar la batalla.</p>
+    <p style="margin-bottom: 12px;">⚠️ Cada error acelera el avance del enemigo, ¡sé preciso!</p>
+    <p style="margin-top: 20px; color: #eb4318ff; font-weight: bold;">🔥 ¡TOCA ESTE MARCO PARA COMENZAR! 🔥</p>
   `;
-  
-  showFeedback('¡BATALLA INICIADA!', instructions);
+
+  // Añadir el marco al overlay
+  overlay.appendChild(content);
+  document.body.appendChild(overlay);
+
+  // Solo cerrar si se hace clic en el marco (no fuera)
+  content.addEventListener('click', () => {
+    document.body.removeChild(overlay);
+    iniciarJuego(); // Aquí empieza el juego
+  });
+
+  // Evitar que el clic fuera del marco cierre el juego
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      // Ignora clics fuera del marco
+    }
+  });
 }
+
+
+
 
 // Configurar escena del juego
 function setupScene() {
