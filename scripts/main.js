@@ -271,7 +271,6 @@ function showInstructions() {
     <p style="margin-bottom: 12px;">⚠️ Cada error acelera el avance del enemigo, ¡sé preciso!</p>
     <p style="margin-top: 20px; color: #eb4318ff; font-weight: bold;">🔥 ¡TOCA ESTE MARCO PARA COMENZAR! 🔥</p>
   `;
-
   // Añadir el marco al overlay
   overlay.appendChild(content);
   document.body.appendChild(overlay);
@@ -289,8 +288,6 @@ function showInstructions() {
     }
   });
 }
-
-
 
 
 // Configurar escena del juego
