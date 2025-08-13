@@ -84,6 +84,9 @@ function startGame() {
   titleScreen.style.display = 'none';
   menuScreen.style.display = 'block';
   currentScreen = 'menu';
+  
+  // Inicializar el fondo del menú con el nivel por defecto
+  updateMenuBackground();
 }
 
 // Volver al inicio
@@ -98,11 +101,14 @@ function goHome() {
   resetGame();
 }
 
-// Ir al menú
+// Volver al menú
 function goToMenu() {
+  gameScreen.style.display = 'none';
   resultScreen.style.display = 'none';
   menuScreen.style.display = 'block';
   currentScreen = 'menu';
+  
+  // Resetear valores del juego
   resetGame();
 }
 
@@ -128,6 +134,9 @@ function selectOperation(op) {
   if (operationMap[op] !== undefined) {
     buttons[operationMap[op]].classList.add('selected');
   }
+  
+  // Actualizar fondo del menú según el nivel seleccionado
+  updateMenuBackground();
 }
 
 // Seleccionar nivel
@@ -143,6 +152,45 @@ function selectLevel(level) {
   const options = document.querySelectorAll('.level-option');
   if (options[level - 1]) {
     options[level - 1].classList.add('selected');
+  }
+  
+  // Actualizar fondo del menú según el nivel seleccionado
+  updateMenuBackground();
+}
+
+// Actualizar fondo del menú según el nivel seleccionado
+function updateMenuBackground() {
+  const menuBackground = document.querySelector('.menu-background');
+  if (!menuBackground) return;
+  
+  const backgrounds = {
+    1: 'images/fondo2.jpg',
+    2: 'images/fondo3.jpg',
+    3: 'images/fondo4.jpg'
+  };
+  
+  if (backgrounds[selectedLevel]) {
+    menuBackground.style.backgroundImage = `url('${backgrounds[selectedLevel]}')`;
+    menuBackground.style.backgroundSize = 'cover';
+    menuBackground.style.backgroundPosition = 'center';
+    menuBackground.style.backgroundRepeat = 'no-repeat';
+    
+    // Crear o actualizar overlay
+    let overlay = menuBackground.querySelector('.menu-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'menu-overlay';
+      overlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 2;
+      `;
+      menuBackground.appendChild(overlay);
+    }
   }
 }
 
@@ -488,7 +536,20 @@ function checkAnswer(selectedAnswer) {
     // Matar al enemigo
     killEnemy();
     
-    showFeedback('¡CORRECTO!', `+${selectedLevel * 10} puntos. Enemigo eliminado!`);
+    // Temática infantil para aciertos
+    const successMessages = [
+      '¡MUY BIEN! 🌟',
+      '¡EXCELENTE! ⭐',
+      '¡FANTÁSTICO! 🎉',
+      '¡INCREÍBLE! 🏆',
+      '¡PERFECTO! 💫',
+      '¡GENIAL! 🎊',
+      '¡BRAVO! 👏',
+      '¡SUPER! 🚀'
+    ];
+    
+    const randomSuccess = successMessages[Math.floor(Math.random() * successMessages.length)];
+    showFeedback(randomSuccess, `+${selectedLevel * 10} puntos. ¡Sigue así! 🎯`);
     
     // Verificar si ganó
     if (questionsAnswered >= targetQuestions) {
@@ -503,7 +564,21 @@ function checkAnswer(selectedAnswer) {
   } else {
     // Respuesta incorrecta - el enemigo se acerca más rápido
     enemySpeed += 0.2;
-    showFeedback('¡INCORRECTO!', `La respuesta era: ${currentAnswer}. El enemigo se acerca más rápido!`);
+    
+    // Temática infantil para errores
+    const errorMessages = [
+      '¡UY! 😢',
+      '¡OOPS! 😅',
+      '¡CÁSPITA! 😔',
+      '¡AY NO! 😭',
+      '¡UPS! 😰',
+      '¡OH NO! 😥',
+      '¡MALO! 😞',
+      '¡ERROR! 😓'
+    ];
+    
+    const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+    showFeedback(randomError, `La respuesta era: ${currentAnswer}. ¡No te rindas! 💪`);
     
     // Animación de daño
     playerCharacter.classList.add('damage');
@@ -579,10 +654,39 @@ function createParticles(element) {
   }
 }
 
-// Mostrar feedback
+// Mostrar feedback con temática infantil
 function showFeedback(title, message) {
   feedbackTitle.textContent = title;
   feedbackMessage.textContent = message;
+  
+  // Añadir estilos infantiles al feedback
+  feedbackOverlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+  `;
+  
+  const feedbackContent = document.querySelector('.feedback-content');
+  if (feedbackContent) {
+    feedbackContent.style.cssText = `
+      background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border: 3px solid #fff;
+      animation: bounce 0.5s ease-in-out;
+    `;
+  }
+  
   feedbackOverlay.classList.remove('hidden');
   
   setTimeout(() => {
