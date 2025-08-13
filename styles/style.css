@@ -460,7 +460,7 @@ body::before {
   bottom: 60px;
   z-index: 10;
 }
-
+/* Estilo para el personaje del jugador */
 .wizard-character.attack {
   background-image: url('images/actor1.gif');
   animation: attack 0.8s ease;
@@ -489,7 +489,7 @@ body::before {
 .enemy-character.death {
   animation: enemyDeath 0.5s ease;
 }
-
+/* Animaciones */
 @keyframes attack {
   0% { transform: translateX(0) rotate(0deg); }
   25% { transform: translateX(20px) rotate(-15deg); }
@@ -533,7 +533,7 @@ body::before {
     transform: rotate(360deg);
   }
 }
-
+/* Pantalla de pregunta */
 .question-display {
   font-size: 2.5rem;
   background: rgba(0, 0, 0, 0.7);
